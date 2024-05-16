@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate URL from Multiple Inputs</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+      function generateURL() {
+        var paymentmethod = encodeURIComponent(document.getElementById('method').value);
+        var paymentchannel = encodeURIComponent(document.getElementById('paymentchannel').value);
+        var rdchannel = paymentchannel;
+        var amount1 = document.getElementById('amount1').value;
+        var amount2 = document.getElementById('amount2').value;
+        var amount3 = document.getElementById('amount3').value;
+        var donationtype = document.getElementById('donationtype').value;
+        var baseURL = document.getElementById('url').value;
+        var campaign = encodeURIComponent(document.getElementById('campaign').value);
+        var firstname = 'firstname=Mathias';
+        var lastname = 'lastname=Kristiansen';
+        var email = encodeURIComponent('email=mathias.kristiansen@nrc.no');
+        var mobile = encodeURIComponent('+4797683197');
+        var form_fields = firstname + '&' + lastname + '&' + email + '&' + mobile;
+
+        var amounttype = donationtype == 'onetime' ? "opa" : "mpa";
+        var narrativetype = donationtype == 'onetime' ? 'onl' : 'mnl';
+
+        var narrative1 = encodeURIComponent(document.getElementById('narrative1').value);
+        var narrative2 = encodeURIComponent(document.getElementById('narrative2').value);
+        var narrative3 = encodeURIComponent(document.getElementById('narrative3').value);
+
+        var ga_medium = paymentchannel;
+        var ga_source;
+        if (['SMS', 'Newsletter', 'Email'].includes(paymentchannel)) {
+          ga_source = encodeURIComponent('Marketing Cloud');
+        } else if (['Facebook', 'Google', 'Bing'].includes(paymentchannel)) {
+          ga_source = encodeURIComponent('Advertising Studio');
+        } else {
+          ga_source = encodeURIComponent('Unknown');
+        }
+        var ad_content = encodeURIComponent(document.getElementById('adcontent').value);
+
+        var generatedURL = `${baseURL}?${form_fields}&df=${donationtype}&custom_SrIano1Z4FAbwqn=${rdchannel}&custom_XsPzn4aJ1fJbQOf=${paymentchannel}&${amounttype}=${amount1};${amount2};${amount3}&${narrativetype}=${narrative1};${narrative2};${narrative3}&custom_campaign_gyl2Rcdo3iyGaF9=${campaign}&source=${ga_source}&medium=${ga_medium}`;
+
+        document.getElementById('generatedURL').value = generatedURL;
+        return false;
+    }
+  
+    function copyToClipboard() {
+      var copyText = document.getElementById('generatedURL');
+      copyText.select();
+      document.execCommand('copy');
+      
+      var feedback = document.getElementById('copyFeedback');
+      feedback.style.display = 'block';
+      
+      setTimeout(function() {
+        feedback.style.display = 'none';
+      }, 2000);
+    }
+    </script>
+</head>
+<body>
+
+<h2>Generate URL</h2>
+
+<form onsubmit="return generateURL()">
+    <label for="url">URL:</label>
+    <input type="text" id="url" name="url">
+
+    <label for="donationtype">Default Donation Type:</label>
+    <select id="donationtype" name="donationtype">
+        <option value="" disabled selected>Select</option>
+        <option value="onetime">Single Donation</option>
+        <option value="recurring">Regular Donation</option>
+    </select>
+
+    <label for="paymentchannel">Payment Channel:</label>
+    <select id="paymentchannel" name="paymentchannel" required>
+        <option value="" disabled selected>Select</option>
+        <option value="newsletter">Newsletter</option>
+        <option value="facebook">Facebook</option>
+        <option value="instagram">Instagram</option>
+        <option value="fieldmarketing">Field Marketing</option>
+        <option value="google">Google</option>
+        <option value="bing">Bing</option>
+        <option value="email">Email</option>
+        <option value="youtube">Youtube</option>
+        <option value="sms">SMS</option>
+        <option value="web">Web</option>
+        <option value="directmail">Direct Mail</option>
+    </select>
+
+    <label for="campaign">Campaign Name:</label>
+    <input type="text" id="campaign" name="campaign">
+
+    <label for="amount1">Amount 1:</label>
+    <input type="number" id="amount1" name="amount1" required>
+
+    <label for="amount2">Amount 2:</label>
+    <input type="number" id="amount2" name="amount2" required>
+
+    <label for="amount3">Amount 3:</label>
+    <input type="number" id="amount3" name="amount3" required>
+
+    <label for="narrative1">Narrative 1:</label>
+    <input type="text" id="narrative1" name="narrative1">
+
+    <label for="narrative2">Narrative 2:</label>
+    <input type="text" id="narrative2" name="narrative2">
+
+    <label for="narrative3">Narrative 3:</label>
+    <input type="text" id="narrative3" name="narrative3">
+
+    <label for="adcontent">GA Ad Content:</label>
+    <input type="text" id="adcontent" name="adcontent">
+    
+    <input type="submit" value="Generate URL">
+</form>
+
+<div id="copyFeedback" class="copy-feedback" style="display: none;">URL copied to clipboard!</div>
+<textarea id="generatedURL" class="generated-url-output" rows="3" readonly></textarea>
+<button onclick="copyToClipboard()">Copy URL</button>
+
+</body>
+</html>
