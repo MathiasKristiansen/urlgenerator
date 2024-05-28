@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script>
       document.addEventListener("DOMContentLoaded", function() {
-        document.querySelector("form").addEventListener("submit", function(event) {
+        document.getElementById("url-form").addEventListener("submit", function(event) {
           event.preventDefault(); // Prevent form from submitting and refreshing
           generateURL();
         });
@@ -74,7 +74,7 @@
 
 <h2>Generate URL</h2>
 
-<form>
+<form id="url-form">
     <label for="url">URL:</label>
     <input type="text" id="url" name="url" required>
 
