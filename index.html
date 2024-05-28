@@ -22,51 +22,19 @@
         console.log("generateURL function called");
         // Log each element to identify which one is causing the issue
         try {
-          var baseURL = document.getElementById('url');
-          if (!baseURL) console.error("Element 'url' not found");
-          baseURL = baseURL.value;
+          var elements = ["url", "donationtype", "paymentchannel", "amount1", "amount2", "amount3", "campaign", "narrative1", "narrative2", "narrative3", "adcontent"];
+          var values = {};
           
-          var donationtype = document.getElementById('donationtype');
-          if (!donationtype) console.error("Element 'donationtype' not found");
-          donationtype = donationtype.value;
-          
-          var paymentchannel = document.getElementById('paymentchannel');
-          if (!paymentchannel) console.error("Element 'paymentchannel' not found");
-          paymentchannel = paymentchannel.value;
-          
-          var amount1 = document.getElementById('amount1');
-          if (!amount1) console.error("Element 'amount1' not found");
-          amount1 = amount1.value;
-          
-          var amount2 = document.getElementById('amount2');
-          if (!amount2) console.error("Element 'amount2' not found");
-          amount2 = amount2.value;
-          
-          var amount3 = document.getElementById('amount3');
-          if (!amount3) console.error("Element 'amount3' not found");
-          amount3 = amount3.value;
-          
-          var campaign = document.getElementById('campaign');
-          if (!campaign) console.error("Element 'campaign' not found");
-          campaign = campaign.value;
-          
-          var narrative1 = document.getElementById('narrative1');
-          if (!narrative1) console.error("Element 'narrative1' not found");
-          narrative1 = narrative1.value;
-          
-          var narrative2 = document.getElementById('narrative2');
-          if (!narrative2) console.error("Element 'narrative2' not found");
-          narrative2 = narrative2.value;
-          
-          var narrative3 = document.getElementById('narrative3');
-          if (!narrative3) console.error("Element 'narrative3' not found");
-          narrative3 = narrative3.value;
-          
-          var ad_content = document.getElementById('adcontent');
-          if (!ad_content) console.error("Element 'adcontent' not found");
-          ad_content = ad_content.value;
+          elements.forEach(function(id) {
+            var element = document.getElementById(id);
+            if (!element) {
+              console.error(`Element with id '${id}' not found`);
+              throw new Error(`Element with id '${id}' not found`);
+            }
+            values[id] = element.value;
+          });
 
-          var generatedURL = `${baseURL}?donationtype=${donationtype}&paymentchannel=${paymentchannel}&amount1=${amount1}&amount2=${amount2}&amount3=${amount3}&campaign=${campaign}&narrative1=${narrative1}&narrative2=${narrative2}&narrative3=${narrative3}&adcontent=${ad_content}`;
+          var generatedURL = `${values.url}?donationtype=${values.donationtype}&paymentchannel=${values.paymentchannel}&amount1=${values.amount1}&amount2=${values.amount2}&amount3=${values.amount3}&campaign=${values.campaign}&narrative1=${values.narrative1}&narrative2=${values.narrative2}&narrative3=${values.narrative3}&adcontent=${values.adcontent}`;
 
           document.getElementById('generatedURL').value = generatedURL;
           console.log("Generated URL: ", generatedURL);
