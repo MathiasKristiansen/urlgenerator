@@ -3,66 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate URL Debug</title>
+    <title>Generate URL from Multiple Inputs</title>
+    <link rel="stylesheet" href="style.css">
     <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById("url-form").addEventListener("submit", function(event) {
-          event.preventDefault(); // Prevent form from submitting and refreshing
-          console.log("Form submission prevented"); // Log to verify
-          try {
-            generateURL();
-          } catch (error) {
-            console.error("Caught error in generateURL: ", error);
-            alert("Caught error: " + error.message);
-          }
-        });
-      });
-
       function generateURL() {
-        console.log("generateURL function called");
-        // Log each element to identify which one is causing the issue
         try {
-          var elements = ["url", "donationtype", "paymentchannel", "amount1", "amount2", "amount3", "campaign", "narrative1", "narrative2", "narrative3", "adcontent"];
-          var values = {};
-          
-          elements.forEach(function(id) {
-            var element = document.getElementById(id);
-            if (!element) {
-              console.error(`Element with id '${id}' not found`);
-              throw new Error(`Element with id '${id}' not found`);
-            }
-            values[id] = element.value;
-          });
+          // Checking for elements and their values
+          var paymentmethod = document.getElementById('method') ? encodeURIComponent(document.getElementById('method').value) : '';
+          var paymentchannel = encodeURIComponent(document.getElementById('paymentchannel').value);
+          var rdchannel = paymentchannel;
+          var amount1 = document.getElementById('amount1').value;
+          var amount2 = document.getElementById('amount2').value;
+          var amount3 = document.getElementById('amount3').value;
+          var donationtype = document.getElementById('donationtype').value;
+          var baseURL = document.getElementById('url').value;
+          var campaign = encodeURIComponent(document.getElementById('campaign').value);
+          var firstname = 'firstname=Mathias';
+          var lastname = 'lastname=Kristiansen';
+          var email = encodeURIComponent('email=mathias.kristiansen@nrc.no');
+          var mobile = encodeURIComponent('+4797683197');
+          var form_fields = firstname + '&' + lastname + '&' + email + '&' + mobile;
 
-          var generatedURL = `${values.url}?donationtype=${values.donationtype}&paymentchannel=${values.paymentchannel}&amount1=${values.amount1}&amount2=${values.amount2}&amount3=${values.amount3}&campaign=${values.campaign}&narrative1=${values.narrative1}&narrative2=${values.narrative2}&narrative3=${values.narrative3}&adcontent=${values.adcontent}`;
+          var amounttype = donationtype == 'onetime' ? "opa" : "mpa";
+          var narrativetype = donationtype == 'onetime' ? 'onl' : 'mnl';
+
+          var narrative1 = encodeURIComponent(document.getElementById('narrative1').value);
+          var narrative2 = encodeURIComponent(document.getElementById('narrative2').value);
+          var narrative3 = encodeURIComponent(document.getElementById('narrative3').value);
+
+          var ga_medium = paymentchannel;
+          var ga_source;
+          if (['SMS', 'Newsletter', 'Email'].includes(paymentchannel)) {
+            ga_source = encodeURIComponent('Marketing Cloud');
+          } else if (['Facebook', 'Google', 'Bing'].includes(paymentchannel)) {
+            ga_source = encodeURIComponent('Advertising Studio');
+          } else {
+            ga_source = encodeURIComponent('Unknown');
+          }
+          var ad_content = encodeURIComponent(document.getElementById('adcontent').value);
+
+          var generatedURL = `${baseURL}?${form_fields}&df=${donationtype}&custom_SrIano1Z4FAbwqn=${rdchannel}&custom_XsPzn4aJ1fJbQOf=${paymentchannel}&${amounttype}=${amount1};${amount2};${amount3}&${narrativetype}=${narrative1};${narrative2};${narrative3}&custom_campaign_gyl2Rcdo3iyGaF9=${campaign}&source=${ga_source}&medium=${ga_medium}`;
 
           document.getElementById('generatedURL').value = generatedURL;
           console.log("Generated URL: ", generatedURL);
+          return false;
         } catch (error) {
           console.error("Error generating URL: ", error);
           alert("Error generating URL: " + error.message);
+          return false;
         }
+      }
+
+      function copyToClipboard() {
+        var copyText = document.getElementById('generatedURL');
+        copyText.select();
+        document.execCommand('copy');
+
+        var feedback = document.getElementById('copyFeedback');
+        feedback.style.display = 'block';
+
+        setTimeout(function() {
+          feedback.style.display = 'none';
+        }, 2000);
       }
     </script>
 </head>
 <body>
 
-<h2>Generate URL Debug</h2>
+<h2>Generate URL</h2>
 
-<form id="url-form">
+<form onsubmit="return generateURL()">
     <label for="url">URL:</label>
     <input type="text" id="url" name="url" required>
 
     <label for="donationtype">Choose Donation Type:</label>
     <select id="donationtype" name="donationtype" required>
-        <option value="" disabled selected>Select Donation Type</option>
+        <option value="" disabled selected>Select</option>
         <option value="onetime">Single Donation</option>
         <option value="recurring">Regular Donation</option>
     </select>
 
     <label for="paymentchannel">Payment Channel:</label>
     <select id="paymentchannel" name="paymentchannel" required>
-        <option value="" disabled selected>Select Payment Channel</option>
+        <option value="" disabled selected>Select</option>
         <option value="newsletter">Newsletter</option>
         <option value="facebook">Facebook</option>
         <option value="instagram">Instagram</option>
@@ -99,11 +122,13 @@
 
     <label for="adcontent">GA Ad Content:</label>
     <input type="text" id="adcontent" name="adcontent" required>
-    
+
     <input type="submit" value="Generate URL">
 </form>
 
-<textarea id="generatedURL" rows="3" readonly></textarea>
+<div id="copyFeedback" class="copy-feedback" style="display: none;">URL copied to clipboard!</div>
+<textarea id="generatedURL" class="generated-url-output" rows="3" readonly></textarea>
+<button onclick="copyToClipboard()">Copy URL</button>
 
 </body>
 </html>
