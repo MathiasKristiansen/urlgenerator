@@ -3,45 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate URL from Multiple Inputs</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <title>Generate URL Debug</title>
     <script>
       document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("url-form").addEventListener("submit", function(event) {
           event.preventDefault(); // Prevent form from submitting and refreshing
           console.log("Form submission prevented"); // Log to verify
-          generateURL();
+          try {
+            generateURL();
+          } catch (error) {
+            console.error("Caught error in generateURL: ", error);
+            alert("Caught error: " + error.message);
+          }
         });
       });
 
       function generateURL() {
+        console.log("generateURL function called");
+        // Log each element to identify which one is causing the issue
         try {
-          var baseURL = document.getElementById('url').value;
-          var donationtype = document.getElementById('donationtype').value;
-          var paymentchannel = document.getElementById('paymentchannel').value;
-          var amount1 = document.getElementById('amount1').value;
-          var amount2 = document.getElementById('amount2').value;
-          var amount3 = document.getElementById('amount3').value;
-          var campaign = document.getElementById('campaign').value;
-          var narrative1 = document.getElementById('narrative1').value;
-          var narrative2 = document.getElementById('narrative2').value;
-          var narrative3 = document.getElementById('narrative3').value;
-          var ad_content = document.getElementById('adcontent').value;
+          var baseURL = document.getElementById('url');
+          if (!baseURL) console.error("Element 'url' not found");
+          baseURL = baseURL.value;
+          
+          var donationtype = document.getElementById('donationtype');
+          if (!donationtype) console.error("Element 'donationtype' not found");
+          donationtype = donationtype.value;
+          
+          var paymentchannel = document.getElementById('paymentchannel');
+          if (!paymentchannel) console.error("Element 'paymentchannel' not found");
+          paymentchannel = paymentchannel.value;
+          
+          var amount1 = document.getElementById('amount1');
+          if (!amount1) console.error("Element 'amount1' not found");
+          amount1 = amount1.value;
+          
+          var amount2 = document.getElementById('amount2');
+          if (!amount2) console.error("Element 'amount2' not found");
+          amount2 = amount2.value;
+          
+          var amount3 = document.getElementById('amount3');
+          if (!amount3) console.error("Element 'amount3' not found");
+          amount3 = amount3.value;
+          
+          var campaign = document.getElementById('campaign');
+          if (!campaign) console.error("Element 'campaign' not found");
+          campaign = campaign.value;
+          
+          var narrative1 = document.getElementById('narrative1');
+          if (!narrative1) console.error("Element 'narrative1' not found");
+          narrative1 = narrative1.value;
+          
+          var narrative2 = document.getElementById('narrative2');
+          if (!narrative2) console.error("Element 'narrative2' not found");
+          narrative2 = narrative2.value;
+          
+          var narrative3 = document.getElementById('narrative3');
+          if (!narrative3) console.error("Element 'narrative3' not found");
+          narrative3 = narrative3.value;
+          
+          var ad_content = document.getElementById('adcontent');
+          if (!ad_content) console.error("Element 'adcontent' not found");
+          ad_content = ad_content.value;
 
           var generatedURL = `${baseURL}?donationtype=${donationtype}&paymentchannel=${paymentchannel}&amount1=${amount1}&amount2=${amount2}&amount3=${amount3}&campaign=${campaign}&narrative1=${narrative1}&narrative2=${narrative2}&narrative3=${narrative3}&adcontent=${ad_content}`;
 
           document.getElementById('generatedURL').value = generatedURL;
           console.log("Generated URL: ", generatedURL);
         } catch (error) {
-          console.error("Error generating URL:", error);
+          console.error("Error generating URL: ", error);
+          alert("Error generating URL: " + error.message);
         }
       }
     </script>
 </head>
 <body>
 
-<h2>Generate URL</h2>
+<h2>Generate URL Debug</h2>
 
 <form id="url-form">
     <label for="url">URL:</label>
@@ -97,7 +135,7 @@
     <input type="submit" value="Generate URL">
 </form>
 
-<textarea id="generatedURL" class="generated-url-output" rows="3" readonly></textarea>
+<textarea id="generatedURL" rows="3" readonly></textarea>
 
 </body>
 </html>
