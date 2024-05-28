@@ -7,33 +7,36 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script>
-      function generateURL(event) {
-        event.preventDefault(); // Prevent form from submitting and refreshing
-        
+      document.addEventListener("DOMContentLoaded", function() {
+        document.querySelector("form").addEventListener("submit", function(event) {
+          event.preventDefault(); // Prevent form from submitting and refreshing
+          generateURL();
+        });
+      });
+
+      function generateURL() {
         try {
-          var paymentmethod = encodeURIComponent(document.getElementById('method').value);
+          var baseURL = document.getElementById('url').value;
+          var donationtype = document.getElementById('donationtype').value;
           var paymentchannel = encodeURIComponent(document.getElementById('paymentchannel').value);
-          var rdchannel = paymentchannel;
           var amount1 = document.getElementById('amount1').value;
           var amount2 = document.getElementById('amount2').value;
           var amount3 = document.getElementById('amount3').value;
-          var donationtype = document.getElementById('donationtype').value;
-          var baseURL = document.getElementById('url').value;
           var campaign = encodeURIComponent(document.getElementById('campaign').value);
+          var narrative1 = encodeURIComponent(document.getElementById('narrative1').value);
+          var narrative2 = encodeURIComponent(document.getElementById('narrative2').value);
+          var narrative3 = encodeURIComponent(document.getElementById('narrative3').value);
+          var ad_content = encodeURIComponent(document.getElementById('adcontent').value);
+
           var firstname = 'firstname=Mathias';
           var lastname = 'lastname=Kristiansen';
           var email = encodeURIComponent('email=mathias.kristiansen@nrc.no');
           var mobile = encodeURIComponent('+4797683197');
           var form_fields = firstname + '&' + lastname + '&' + email + '&' + mobile;
 
-          var amounttype = donationtype == 'onetime' ? "opa" : "mpa";
-          var narrativetype = donationtype == 'onetime' ? 'onl' : 'mnl';
+          var amounttype = donationtype === 'onetime' ? "opa" : "mpa";
+          var narrativetype = donationtype === 'onetime' ? 'onl' : 'mnl';
 
-          var narrative1 = encodeURIComponent(document.getElementById('narrative1').value);
-          var narrative2 = encodeURIComponent(document.getElementById('narrative2').value);
-          var narrative3 = encodeURIComponent(document.getElementById('narrative3').value);
-
-          var ga_medium = paymentchannel;
           var ga_source;
           if (['SMS', 'Newsletter', 'Email'].includes(paymentchannel)) {
             ga_source = encodeURIComponent('Marketing Cloud');
@@ -42,9 +45,8 @@
           } else {
             ga_source = encodeURIComponent('Unknown');
           }
-          var ad_content = encodeURIComponent(document.getElementById('adcontent').value);
 
-          var generatedURL = `${baseURL}?${form_fields}&df=${donationtype}&custom_SrIano1Z4FAbwqn=${rdchannel}&custom_XsPzn4aJ1fJbQOf=${paymentchannel}&${amounttype}=${amount1};${amount2};${amount3}&${narrativetype}=${narrative1};${narrative2};${narrative3}&custom_campaign_gyl2Rcdo3iyGaF9=${campaign}&source=${ga_source}&medium=${ga_medium}`;
+          var generatedURL = `${baseURL}?${form_fields}&df=${donationtype}&custom_SrIano1Z4FAbwqn=${paymentchannel}&custom_XsPzn4aJ1fJbQOf=${paymentchannel}&${amounttype}=${amount1};${amount2};${amount3}&${narrativetype}=${narrative1};${narrative2};${narrative3}&custom_campaign_gyl2Rcdo3iyGaF9=${campaign}&source=${ga_source}&medium=${paymentchannel}`;
 
           document.getElementById('generatedURL').value = generatedURL;
           console.log("Generated URL: ", generatedURL);
@@ -72,7 +74,7 @@
 
 <h2>Generate URL</h2>
 
-<form onsubmit="generateURL(event)">
+<form>
     <label for="url">URL:</label>
     <input type="text" id="url" name="url" required>
 
