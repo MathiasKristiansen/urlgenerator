@@ -5,79 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generate URL from Multiple Inputs</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script>
-      function generateURL() {
-        var paymentmethod = encodeURIComponent(document.getElementById('method').value);
-        var paymentchannel = encodeURIComponent(document.getElementById('paymentchannel').value);
-        var rdchannel = paymentchannel;
-        var amount1 = document.getElementById('amount1').value;
-        var amount2 = document.getElementById('amount2').value;
-        var amount3 = document.getElementById('amount3').value;
-        var donationtype = document.getElementById('donationtype').value;
-        var baseURL = document.getElementById('url').value;
-        var campaign = encodeURIComponent(document.getElementById('campaign').value);
-        var firstname = 'firstname=Mathias';
-        var lastname = 'lastname=Kristiansen';
-        var email = encodeURIComponent('email=mathias.kristiansen@nrc.no');
-        var mobile = encodeURIComponent('+4797683197');
-        var form_fields = firstname + '&' + lastname + '&' + email + '&' + mobile;
+      function generateURL(event) {
+        event.preventDefault(); // Prevent form from submitting and refreshing
+        
+        try {
+          var paymentmethod = encodeURIComponent(document.getElementById('method').value);
+          var paymentchannel = encodeURIComponent(document.getElementById('paymentchannel').value);
+          var rdchannel = paymentchannel;
+          var amount1 = document.getElementById('amount1').value;
+          var amount2 = document.getElementById('amount2').value;
+          var amount3 = document.getElementById('amount3').value;
+          var donationtype = document.getElementById('donationtype').value;
+          var baseURL = document.getElementById('url').value;
+          var campaign = encodeURIComponent(document.getElementById('campaign').value);
+          var firstname = 'firstname=Mathias';
+          var lastname = 'lastname=Kristiansen';
+          var email = encodeURIComponent('email=mathias.kristiansen@nrc.no');
+          var mobile = encodeURIComponent('+4797683197');
+          var form_fields = firstname + '&' + lastname + '&' + email + '&' + mobile;
 
-        var amounttype = donationtype == 'onetime' ? "opa" : "mpa";
-        var narrativetype = donationtype == 'onetime' ? 'onl' : 'mnl';
+          var amounttype = donationtype == 'onetime' ? "opa" : "mpa";
+          var narrativetype = donationtype == 'onetime' ? 'onl' : 'mnl';
 
-        var narrative1 = encodeURIComponent(document.getElementById('narrative1').value);
-        var narrative2 = encodeURIComponent(document.getElementById('narrative2').value);
-        var narrative3 = encodeURIComponent(document.getElementById('narrative3').value);
+          var narrative1 = encodeURIComponent(document.getElementById('narrative1').value);
+          var narrative2 = encodeURIComponent(document.getElementById('narrative2').value);
+          var narrative3 = encodeURIComponent(document.getElementById('narrative3').value);
 
-        var ga_medium = paymentchannel;
-        var ga_source;
-        if (['SMS', 'Newsletter', 'Email'].includes(paymentchannel)) {
-          ga_source = encodeURIComponent('Marketing Cloud');
-        } else if (['Facebook', 'Google', 'Bing'].includes(paymentchannel)) {
-          ga_source = encodeURIComponent('Advertising Studio');
-        } else {
-          ga_source = encodeURIComponent('Unknown');
+          var ga_medium = paymentchannel;
+          var ga_source;
+          if (['SMS', 'Newsletter', 'Email'].includes(paymentchannel)) {
+            ga_source = encodeURIComponent('Marketing Cloud');
+          } else if (['Facebook', 'Google', 'Bing'].includes(paymentchannel)) {
+            ga_source = encodeURIComponent('Advertising Studio');
+          } else {
+            ga_source = encodeURIComponent('Unknown');
+          }
+          var ad_content = encodeURIComponent(document.getElementById('adcontent').value);
+
+          var generatedURL = `${baseURL}?${form_fields}&df=${donationtype}&custom_SrIano1Z4FAbwqn=${rdchannel}&custom_XsPzn4aJ1fJbQOf=${paymentchannel}&${amounttype}=${amount1};${amount2};${amount3}&${narrativetype}=${narrative1};${narrative2};${narrative3}&custom_campaign_gyl2Rcdo3iyGaF9=${campaign}&source=${ga_source}&medium=${ga_medium}`;
+
+          document.getElementById('generatedURL').value = generatedURL;
+          console.log("Generated URL: ", generatedURL);
+        } catch (error) {
+          console.error("Error generating URL:", error);
+          alert("An error occurred while generating the URL. Check the console for details.");
         }
-        var ad_content = encodeURIComponent(document.getElementById('adcontent').value);
+      }
 
-        var generatedURL = `${baseURL}?${form_fields}&df=${donationtype}&custom_SrIano1Z4FAbwqn=${rdchannel}&custom_XsPzn4aJ1fJbQOf=${paymentchannel}&${amounttype}=${amount1};${amount2};${amount3}&${narrativetype}=${narrative1};${narrative2};${narrative3}&custom_campaign_gyl2Rcdo3iyGaF9=${campaign}&source=${ga_source}&medium=${ga_medium}`;
-
-        document.getElementById('generatedURL').value = generatedURL;
-        return false;
-    }
-  
-    function copyToClipboard() {
-      var copyText = document.getElementById('generatedURL');
-      copyText.select();
-      document.execCommand('copy');
-      
-      var feedback = document.getElementById('copyFeedback');
-      feedback.style.display = 'block';
-      
-      setTimeout(function() {
-        feedback.style.display = 'none';
-      }, 2000);
-    }
+      function copyToClipboard() {
+        var copyText = document.getElementById('generatedURL');
+        copyText.select();
+        document.execCommand('copy');
+        
+        var feedback = document.getElementById('copyFeedback');
+        feedback.style.display = 'block';
+        
+        setTimeout(function() {
+          feedback.style.display = 'none';
+        }, 2000);
+      }
     </script>
 </head>
 <body>
 
 <h2>Generate URL</h2>
 
-<form onsubmit="return generateURL()">
+<form onsubmit="generateURL(event)">
     <label for="url">URL:</label>
-    <input type="text" id="url" name="url">
+    <input type="text" id="url" name="url" required>
 
-    <label for="donationtype">Default Donation Type:</label>
-    <select id="donationtype" name="donationtype">
-        <option value="" disabled selected>Select</option>
+    <label for="donationtype">Choose Donation Type:</label>
+    <select id="donationtype" name="donationtype" required>
+        <option value="" disabled selected>Select Donation Type</option>
         <option value="onetime">Single Donation</option>
         <option value="recurring">Regular Donation</option>
     </select>
 
     <label for="paymentchannel">Payment Channel:</label>
     <select id="paymentchannel" name="paymentchannel" required>
-        <option value="" disabled selected>Select</option>
+        <option value="" disabled selected>Select Payment Channel</option>
         <option value="newsletter">Newsletter</option>
         <option value="facebook">Facebook</option>
         <option value="instagram">Instagram</option>
@@ -92,28 +100,28 @@
     </select>
 
     <label for="campaign">Campaign Name:</label>
-    <input type="text" id="campaign" name="campaign">
+    <input type="text" id="campaign" name="campaign" required>
 
-    <label for="amount1">Amount 1:</label>
+    <label for="amount1">Set Amount 1:</label>
     <input type="number" id="amount1" name="amount1" required>
 
-    <label for="amount2">Amount 2:</label>
+    <label for="amount2">Set Amount 2:</label>
     <input type="number" id="amount2" name="amount2" required>
 
-    <label for="amount3">Amount 3:</label>
+    <label for="amount3">Set Amount 3:</label>
     <input type="number" id="amount3" name="amount3" required>
 
     <label for="narrative1">Narrative 1:</label>
-    <input type="text" id="narrative1" name="narrative1">
+    <input type="text" id="narrative1" name="narrative1" required>
 
     <label for="narrative2">Narrative 2:</label>
-    <input type="text" id="narrative2" name="narrative2">
+    <input type="text" id="narrative2" name="narrative2" required>
 
     <label for="narrative3">Narrative 3:</label>
-    <input type="text" id="narrative3" name="narrative3">
+    <input type="text" id="narrative3" name="narrative3" required>
 
     <label for="adcontent">GA Ad Content:</label>
-    <input type="text" id="adcontent" name="adcontent">
+    <input type="text" id="adcontent" name="adcontent" required>
     
     <input type="submit" value="Generate URL">
 </form>
