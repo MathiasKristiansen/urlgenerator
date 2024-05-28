@@ -17,11 +17,6 @@
           var donationtype = document.getElementById('donationtype').value;
           var baseURL = document.getElementById('url').value;
           var campaign = encodeURIComponent(document.getElementById('campaign').value);
-          var firstname = 'firstname=Mathias';
-          var lastname = 'lastname=Kristiansen';
-          var email = encodeURIComponent('email=mathias.kristiansen@nrc.no');
-          var mobile = encodeURIComponent('+4797683197');
-          var form_fields = firstname + '&' + lastname + '&' + email + '&' + mobile;
 
           var amounttype = donationtype == 'onetime' ? "opa" : "mpa";
           var narrativetype = donationtype == 'onetime' ? 'onl' : 'mnl';
@@ -85,15 +80,15 @@
     <label for="paymentchannel">Payment Channel:</label>
     <select id="paymentchannel" name="paymentchannel" required>
         <option value="" disabled selected>Select</option>
-        <option value="newsletter">Newsletter</option>
-        <option value="facebook">Facebook</option>
+        <option value="Newsletter">Newsletter</option>
+        <option value="Facebook">Facebook</option>
         <option value="instagram">Instagram</option>
         <option value="fieldmarketing">Field Marketing</option>
-        <option value="google">Google</option>
-        <option value="bing">Bing</option>
-        <option value="email">Email</option>
+        <option value="Google">Google</option>
+        <option value="Bing">Bing</option>
+        <option value="Email">Email</option>
         <option value="youtube">Youtube</option>
-        <option value="sms">SMS</option>
+        <option value="SMS">SMS</option>
         <option value="web">Web</option>
         <option value="directmail">Direct Mail</option>
     </select>
