@@ -9,7 +9,6 @@
       function generateURL() {
         try {
           // Checking for elements and their values
-          var paymentmethod = document.getElementById('method') ? encodeURIComponent(document.getElementById('method').value) : '';
           var paymentchannel = encodeURIComponent(document.getElementById('paymentchannel').value);
           var rdchannel = paymentchannel;
           var amount1 = document.getElementById('amount1').value;
