@@ -9,34 +9,48 @@
       function generateURL() {
         try {
           // Checking for elements and their values
-          var paymentchannel = encodeURIComponent(document.getElementById('paymentchannel').value);
-          var rdchannel = paymentchannel;
+          var sdchannel = encodeURIComponent(document.getElementById('sdchannel').value);
+          var rdchannel = sdchannel;
           var amount1 = document.getElementById('amount1').value;
           var amount2 = document.getElementById('amount2').value;
           var amount3 = document.getElementById('amount3').value;
-          var donationtype = document.getElementById('donationtype').value;
+          var frequency = document.getElementById('frequency').value;
           var baseURL = document.getElementById('url').value;
           var campaign = encodeURIComponent(document.getElementById('campaign').value);
 
-          var amounttype = donationtype == 'onetime' ? "opa" : "mpa";
-          var narrativetype = donationtype == 'onetime' ? 'onl' : 'mnl';
 
           var narrative1 = encodeURIComponent(document.getElementById('narrative1').value);
           var narrative2 = encodeURIComponent(document.getElementById('narrative2').value);
           var narrative3 = encodeURIComponent(document.getElementById('narrative3').value);
 
-          var ga_medium = paymentchannel;
+          var mailingcountry;
+          if (baseURL.includes('.no')) {
+            mailingcountry = encodeURIComponent('Norway');
+          } else if (baseURL.includes('.se')) {
+            mailingcountry = encodeURIComponent('Sweden');
+          } else if (baseURL.includes('de')) {
+            mailingcountry = encodeURIComponent('Germany');
+          } else {
+            ga_source = encodeURIComponent('');
+          }
+
+          var rdcountry = mailingcountry
+          var sdcountry = mailingcountry
+
+          var ga_medium = sdchannel;
           var ga_source;
-          if (['SMS', 'Newsletter', 'Email'].includes(paymentchannel)) {
+          if (['SMS', 'Newsletter', 'Email'].includes(sdchannel)) {
             ga_source = encodeURIComponent('Marketing Cloud');
-          } else if (['Facebook', 'Google', 'Bing'].includes(paymentchannel)) {
+          } else if (['Facebook', 'Google', 'Bing'].includes(sdchannel)) {
             ga_source = encodeURIComponent('Advertising Studio');
           } else {
             ga_source = encodeURIComponent('Unknown');
           }
           var ad_content = encodeURIComponent(document.getElementById('adcontent').value);
 
-          var generatedURL = `${baseURL}?&df=${donationtype}&custom_SrIano1Z4FAbwqn=${rdchannel}&custom_XsPzn4aJ1fJbQOf=${paymentchannel}&${amounttype}=${amount1};${amount2};${amount3}&${narrativetype}=${narrative1};${narrative2};${narrative3}&custom_campaign_gyl2Rcdo3iyGaF9=${campaign}&source=${ga_source}&medium=${ga_medium}`;
+
+
+          var generatedURL = `${baseURL}?&frequency=${frequency}&rdchannel=${rdchannel}&sdchannel=${sdchannel}&amount1=${amount1}&amount2=${amount2}&amount3=${amount3}&campaign=${campaign}&source=${ga_source}&medium=${ga_medium}`;
 
           document.getElementById('generatedURL').value = generatedURL;
           console.log("Generated URL: ", generatedURL);
@@ -70,15 +84,15 @@
     <label for="url">URL:</label>
     <input type="text" id="url" name="url" required>
 
-    <label for="donationtype">Choose Donation Type:</label>
-    <select id="donationtype" name="donationtype" required>
+    <label for="frequency">Choose Donation Type:</label>
+    <select id="frequency" name="frequency" required>
         <option value="" disabled selected>Select</option>
         <option value="onetime">Single Donation</option>
-        <option value="recurring">Regular Donation</option>
+        <option value="monthly">Regular Donation</option>
     </select>
 
-    <label for="paymentchannel">Payment Channel:</label>
-    <select id="paymentchannel" name="paymentchannel" required>
+    <label for="sdchannel">Payment Channel:</label>
+    <select id="sdchannel" name="sdchannel" required>
         <option value="" disabled selected>Select</option>
         <option value="Newsletter">Newsletter</option>
         <option value="Facebook">Facebook</option>
@@ -89,7 +103,7 @@
         <option value="Email">Email</option>
         <option value="youtube">Youtube</option>
         <option value="SMS">SMS</option>
-        <option value="web">Web</option>
+        <option value="Web">Web</option>
         <option value="directmail">Direct Mail</option>
     </select>
 
