@@ -9,39 +9,41 @@
       function generateURL() {
         try {
           // Checking for elements and their values
-          var sdchannel = encodeURIComponent(document.getElementById('sdchannel').value);
-          var rdchannel = sdchannel;
-          var amount1 = document.getElementById('amount1').value;
-          var amount2 = document.getElementById('amount2').value;
-          var amount3 = document.getElementById('amount3').value;
+          var channel = encodeURIComponent(document.getElementById('channel').value);
+          var amountgroup = document.getElementById('amountgroup').value;
           var frequency = document.getElementById('frequency').value;
           var baseURL = document.getElementById('url').value;
           var campaign = encodeURIComponent(document.getElementById('campaign').value);
+          var defaultamount = document.getElementById('defaultamount').value;
 
 
-          var narrative1 = encodeURIComponent(document.getElementById('narrative1').value);
-          var narrative2 = encodeURIComponent(document.getElementById('narrative2').value);
-          var narrative3 = encodeURIComponent(document.getElementById('narrative3').value);
+          var amountgroupintMap = {
+            lowest: 1,
+            low: 2,
+            medium: 3,
+            high: 4,
+            highest: 5
+          };
 
-          var mailingcountry;
-          if (baseURL.includes('.no')) {
-            mailingcountry = encodeURIComponent('Norway');
-          } else if (baseURL.includes('.se')) {
-            mailingcountry = encodeURIComponent('Sweden');
-          } else if (baseURL.includes('de')) {
-            mailingcountry = encodeURIComponent('Germany');
-          } else {
-            ga_source = encodeURIComponent('');
-          }
+          var default_value_int = amountgroupMap[amountgroup] || 3
 
-          var rdcountry = mailingcountry
-          var sdcountry = mailingcountry
+          var amountgroupchar;
+          if (frequency = "Monthly") {
+            amountgroupchar = "m";
+          } else if (frequency = "One-time") {
+            amountgroupchar = "o";
+          }  // Add ELSE statement//
 
-          var ga_medium = sdchannel;
+          var default_value_code = amountgroupchar.concat(str(default_value_int));
+          var default_value = document.getElementById('default').value;
+
+
+
+          var ga_medium = channel;
           var ga_source;
-          if (['SMS', 'Newsletter', 'Email'].includes(sdchannel)) {
+          if (['SMS', 'Newsletter', 'Email'].includes(channel)) {
             ga_source = encodeURIComponent('Marketing Cloud');
-          } else if (['Facebook', 'Google', 'Bing'].includes(sdchannel)) {
+          } else if (['Facebook', 'Google', 'Bing'].includes(channel)) {
             ga_source = encodeURIComponent('Advertising Studio');
           } else {
             ga_source = encodeURIComponent('Unknown');
@@ -50,7 +52,8 @@
 
 
 
-          var generatedURL = `${baseURL}?&frequency=${frequency}&rdchannel=${rdchannel}&sdchannel=${sdchannel}&amount1=${amount1}&amount2=${amount2}&amount3=${amount3}&campaign=${campaign}&source=${ga_source}&medium=${ga_medium}`;
+
+          var generatedURL = `${baseURL}?&frequency=${frequency}&amountgroup=${amountgroup}&${default_value_code}=${default_value}&channel=${channe}&campaignid=${campaign}&source=${ga_source}&medium=${ga_medium}`;
 
           document.getElementById('generatedURL').value = generatedURL;
           console.log("Generated URL: ", generatedURL);
@@ -87,12 +90,13 @@
     <label for="frequency">Choose Donation Type:</label>
     <select id="frequency" name="frequency" required>
         <option value="" disabled selected>Select</option>
-        <option value="onetime">Single Donation</option>
-        <option value="monthly">Regular Donation</option>
+        <option value="One-time">Single Donation</option>
+        <option value="Monthly">Regular Donation</option>
+        <option value="Both">Both</option>
     </select>
 
-    <label for="sdchannel">Payment Channel:</label>
-    <select id="sdchannel" name="sdchannel" required>
+    <label for="channel">Channel:</label>
+    <select id="channel" name="channel" required>
         <option value="" disabled selected>Select</option>
         <option value="Newsletter">Newsletter</option>
         <option value="Facebook">Facebook</option>
@@ -104,29 +108,20 @@
         <option value="youtube">Youtube</option>
         <option value="SMS">SMS</option>
         <option value="Web">Web</option>
-        <option value="directmail">Direct Mail</option>
+        <option value="Direct mail">Direct Mail</option>
     </select>
 
-    <label for="campaign">Campaign Name:</label>
-    <input type="text" id="campaign" name="campaign" required>
+    <label for="campaignid">Campaign ID:</label>
+    <input type="text" id="campaignid" name="campaignid" required>
 
-    <label for="amount1">Set Amount 1:</label>
-    <input type="number" id="amount1" name="amount1" required>
-
-    <label for="amount2">Set Amount 2:</label>
-    <input type="number" id="amount2" name="amount2" required>
-
-    <label for="amount3">Set Amount 3:</label>
-    <input type="number" id="amount3" name="amount3" required>
-
-    <label for="narrative1">Narrative 1:</label>
-    <input type="text" id="narrative1" name="narrative1" required>
-
-    <label for="narrative2">Narrative 2:</label>
-    <input type="text" id="narrative2" name="narrative2" required>
-
-    <label for="narrative3">Narrative 3:</label>
-    <input type="text" id="narrative3" name="narrative3" required>
+    <label for="amountgroup">Amount group</label>
+    <select id="amountgroup" name="amountgroup" required>
+        <option value="" disabled selected>Select</option> 
+        <option value="lowest">Lowest</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+        <option value="highest">Highest</option>
 
     <label for="adcontent">GA Ad Content:</label>
     <input type="text" id="adcontent" name="adcontent" required>
