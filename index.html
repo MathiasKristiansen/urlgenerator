@@ -78,16 +78,22 @@
           amountGroupSelect.addEventListener('change', updateDefaultValues);
 
           frequencySelect.addEventListener('change', function() {
-              updateDefaultValues();
+    console.log("Frequency dropdown changed to:", frequencySelect.value);
+    updateDefaultValues();
 
-              var amountGroupContainer = document.getElementById('amountGroupContainer');
-              if (frequencySelect.value === 'Both') {
-                  amountGroupSelect.value = ''; // Reset selection
-                  amountGroupContainer.style.display = 'none'; // Hide the field
-              } else {
-                  amountGroupContainer.style.display = 'block'; // Show the field
-              }
-          });
+    var amountGroupContainer = document.getElementById('amountGroupContainer');
+    var amountGroupSelect = document.getElementById('amountgroup');
+
+    if (frequencySelect.value === 'Both') {
+        amountGroupSelect.value = ''; // Reset selection
+        amountGroupSelect.removeAttribute('required'); // Remove 'required' if hidden
+        amountGroupContainer.style.display = 'none'; // Hide the field
+    } else {
+        amountGroupSelect.setAttribute('required', true); // Ensure it's required for other frequencies
+        amountGroupContainer.style.display = 'block'; // Show the field
+    }
+});
+
 
           // Initialize Default Values on page load
           updateDefaultValues();
@@ -100,9 +106,16 @@
           var channel = encodeURIComponent(document.getElementById('channel').value);
           var amountgroup = document.getElementById('amountgroup').value;
           var frequency = document.getElementById('frequency').value;
+          console.log("Frequency in generateURL:", frequency);
           var baseURL = document.getElementById('url').value;
           var campaign = encodeURIComponent(document.getElementById('campaignid').value);
           var defaultvalue = document.getElementById('defaultvalue').value;
+
+          var amountgroupurl;
+          if (amountgroup) {
+          amountgroupurl = `amountgroup=${amountgroup}&`
+          } else 
+          amountgroupurl = "";
 
 
           var amountgroupintMap = {
@@ -116,11 +129,13 @@
           var default_value_int = amountgroupintMap[amountgroup] || 3
 
           var amountgroupchar;
-          if (frequency = "Monthly") {
+          if (frequency == "Monthly") {
             amountgroupchar = "m";
-          } else if (frequency = "One-time") {
+          } else if (frequency == "One-time") {
             amountgroupchar = "o";
-          }  // Add ELSE statement//
+          }  else {
+            amountgroupchar = ""
+          }
 
           var default_value_code = amountgroupchar.concat(default_value_int.toString());
           var default_value = document.getElementById('defaultvalue').value;
@@ -142,10 +157,12 @@
           }
           var ad_content = encodeURIComponent(document.getElementById('adcontent').value);
 
+          console.log("Frequency selected before generating URL:", frequency);
 
 
 
-          var generatedURL = `${baseURL}?&frequency=${frequency}&amountgroup=${amountgroup}&${default_value_code}=${default_value}&channel=${channel}&campaignid=${campaign}&source=${ga_source}&medium=${ga_medium}`;
+
+          var generatedURL = `${baseURL}?&frequency=${frequency}&${amountgroupurl}${default_value_code}=${default_value}&channel=${channel}&campaignid=${campaign}&source=${ga_source}&medium=${ga_medium}`;
 
           document.getElementById('generatedURL').value = generatedURL;
           console.log("Generated URL: ", generatedURL);
@@ -207,7 +224,7 @@
     </select>
 
     <label for="campaignid">Campaign ID:</label>
-    <input type="text" id="campaignid" name="campaignid" required>
+    <input type="text" id="campaignid" name="campaignid" >
 
     <div id="amountGroupContainer">
     <label for="amountgroup">Amount Group:</label>
