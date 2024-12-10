@@ -6,6 +6,94 @@
     <title>Generate URL from Multiple Inputs</title>
     <link rel="stylesheet" href="style.css">
     <script>
+
+      var defaultValueOptions = {
+            'One-time':{
+                  'lowest': ['150', '300', '500'],
+                  'low': ['300', '500', '800'],
+                  'medium': ['500', '800', '1000'],
+                  'high': ['1000', '1500', '2000'],
+                  'highest': ['2000', '2500', '3000']
+            },
+
+            'Monthly': {
+                  'lowest': ['150', '200', '300'],
+                  'low': ['250', '350', '400'],
+                  'medium': ['325', '450', '600'],
+                  'high': ['400', '500', '600'],
+                  'highest': ['500', '700', '900']
+            },
+
+            'Both': 
+              ['325', '450', '600']
+            
+          };
+      
+      document.addEventListener('DOMContentLoaded', function() {
+          var amountGroupSelect = document.getElementById('amountgroup');
+          var frequencySelect = document.getElementById('frequency');
+
+          function updateDefaultValues() {
+              var amountgroup = amountGroupSelect.value;
+              var frequency = frequencySelect.value;
+              var defaultvalueSelect = document.getElementById('defaultvalue');
+              defaultvalueSelect.innerHTML = ''; // Clear existing options
+
+              var frequencyOptions = defaultValueOptions[frequency];
+
+              if (frequencyOptions) {
+                  var options;
+                  if (Array.isArray(frequencyOptions)) {
+                      // If frequencyOptions is an array (e.g., 'Both')
+                      options = frequencyOptions;
+                  } else if (frequencyOptions[amountgroup]) {
+                      // If frequencyOptions is an object, get options based on amountgroup
+                      options = frequencyOptions[amountgroup];
+                  }
+
+                  if (options && options.length > 0) {
+                      options.forEach(function(option) {
+                          var opt = document.createElement('option');
+                          opt.value = option;
+                          opt.text = option;
+                          defaultvalueSelect.add(opt);
+                      });
+                  } else {
+                      // If no options are available
+                      var opt = document.createElement('option');
+                      opt.value = '';
+                      opt.text = 'No options available';
+                      defaultvalueSelect.add(opt);
+                  }
+              } else {
+                  // If frequencyOptions is undefined
+                  var opt = document.createElement('option');
+                  opt.value = '';
+                  opt.text = 'No options available';
+                  defaultvalueSelect.add(opt);
+              }
+          }
+
+          // Update Default Values when either Amount Group or Frequency changes
+          amountGroupSelect.addEventListener('change', updateDefaultValues);
+
+          frequencySelect.addEventListener('change', function() {
+              updateDefaultValues();
+
+              var amountGroupContainer = document.getElementById('amountGroupContainer');
+              if (frequencySelect.value === 'Both') {
+                  amountGroupSelect.value = ''; // Reset selection
+                  amountGroupContainer.style.display = 'none'; // Hide the field
+              } else {
+                  amountGroupContainer.style.display = 'block'; // Show the field
+              }
+          });
+
+          // Initialize Default Values on page load
+          updateDefaultValues();
+      });
+
+
       function generateURL() {
         try {
           // Checking for elements and their values
@@ -14,7 +102,7 @@
           var frequency = document.getElementById('frequency').value;
           var baseURL = document.getElementById('url').value;
           var campaign = encodeURIComponent(document.getElementById('campaignid').value);
-          var defaultamount = document.getElementById('defaultamount').value;
+          var defaultvalue = document.getElementById('defaultvalue').value;
 
 
           var amountgroupintMap = {
@@ -25,7 +113,7 @@
             highest: 5
           };
 
-          var default_value_int = amountgroupMap[amountgroup] || 3
+          var default_value_int = amountgroupintMap[amountgroup] || 3
 
           var amountgroupchar;
           if (frequency = "Monthly") {
@@ -34,8 +122,12 @@
             amountgroupchar = "o";
           }  // Add ELSE statement//
 
-          var default_value_code = amountgroupchar.concat(str(default_value_int));
-          var default_value = document.getElementById('default').value;
+          var default_value_code = amountgroupchar.concat(default_value_int.toString());
+          var default_value = document.getElementById('defaultvalue').value;
+
+
+
+
 
 
 
@@ -53,7 +145,7 @@
 
 
 
-          var generatedURL = `${baseURL}?&frequency=${frequency}&amountgroup=${amountgroup}&${default_value_code}=${default_value}&channel=${channe}&campaignid=${campaign}&source=${ga_source}&medium=${ga_medium}`;
+          var generatedURL = `${baseURL}?&frequency=${frequency}&amountgroup=${amountgroup}&${default_value_code}=${default_value}&channel=${channel}&campaignid=${campaign}&source=${ga_source}&medium=${ga_medium}`;
 
           document.getElementById('generatedURL').value = generatedURL;
           console.log("Generated URL: ", generatedURL);
@@ -64,6 +156,9 @@
           return false;
         }
       }
+
+
+
 
       function copyToClipboard() {
         var copyText = document.getElementById('generatedURL');
@@ -114,17 +209,27 @@
     <label for="campaignid">Campaign ID:</label>
     <input type="text" id="campaignid" name="campaignid" required>
 
-    <label for="amountgroup">Amount group</label>
+    <div id="amountGroupContainer">
+    <label for="amountgroup">Amount Group:</label>
     <select id="amountgroup" name="amountgroup" required>
         <option value="" disabled selected>Select</option> 
         <option value="lowest">Lowest</option>
         <option value="low">Low</option>
         <option value="medium">Medium</option>
         <option value="high">High</option>
-        <option value="highest">Highest</option>
+        <option value="highest">Highest</option> 
+    </select>
+</div>
+
+
+    <label for="defaultvalue">Default Value:</label>
+    <select id="defaultvalue" name="defaultvalue" required>
+        <option value="" disabled selected>Select an amount group first</option>
+    </select>
+
 
     <label for="adcontent">GA Ad Content:</label>
-    <input type="text" id="adcontent" name="adcontent" required>
+    <input type="text" id="adcontent" name="adcontent">
 
     <input type="submit" value="Generate URL">
 </form>
