@@ -39,7 +39,7 @@
           var frequencySelect = document.getElementById('frequency');
           var preselectContainer = document.getElementById('preselect-container'); // Container for the Preselect field
           var preselectSelect = document.getElementById('preselect'); // Preselect dropdown
-          var defaultfrequency = ''
+          var defaultfrequency = '';
 
 
           function updateDefaultValues() {
@@ -55,9 +55,12 @@
                  preselectContainer.style.display = 'none'; // Hide Preselect dropdown
               }
 
-              if (preselectSelect === undefined) {
-                defaultfrequency = ''
-              } else defaultfrequency = `&defaultfrequency=${preselectSelect.value}`
+              if (preselectSelect && preselectContainer.style.display !== 'none') {
+                 defaultfrequency = `&defaultfrequency=${preselectSelect.value}`;
+              } else {
+                  defaultfrequency = ''; // Reset if Preselect is hidden or not available
+              }
+
 
               var frequencyOptions = defaultValueOptions[frequency];
 
