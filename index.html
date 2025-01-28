@@ -21,14 +21,14 @@
 
             'Monthly': {
                   'lowest': ['150', '200', '300'],
-                  'low': ['250', '350', '400'],
-                  'medium': ['325', '450', '600'],
-                  'high': ['400', '500', '600'],
-                  'highest': ['500', '700', '900']
+                  'low': ['200', '300', '400'],
+                  'medium': ['250', '350', '500'],
+                  'high': ['500', '650', '800'],
+                  'highest': ['750', '900', '1000']
             },
 
             'Both': 
-              ['325', '450', '600']
+              ['250', '350', '500']
             
           };
 
@@ -58,7 +58,7 @@
               }
 
               if (preselectSelect && preselectContainer.style.display !== 'none') {
-                 defaultfrequency = `&defaultfrequency=${preselectSelect.value}`;
+                 defaultfrequency = `&frequencydefault=${preselectSelect.value}`;
               } else {
                   defaultfrequency = ''; // Reset if Preselect is hidden or not available
               }
@@ -188,7 +188,7 @@
 
 
 
-          var generatedURL = `${baseURL}?&frequency=${frequency}${defaultfrequency}&${amountgroupurl}${default_value_code}=${default_value}&channel=${channel}&campaignid=${campaign}&utm_source=${ga_source}&utm_medium=${ga_medium}`;
+          var generatedURL = `${baseURL}?frequency=${frequency}${defaultfrequency}&${amountgroupurl}${default_value_code}=${default_value}&channel=${channel}&campaignid=${campaign}&utm_source=${ga_source}&utm_medium=${ga_medium}`;
 
           document.getElementById('generatedURL').value = generatedURL;
           console.log("Generated URL: ", generatedURL);
