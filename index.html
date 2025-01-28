@@ -99,8 +99,18 @@
               }
           }
 
+          function updateDefaultFrequency() {
+        if (preselectContainer.style.display !== 'none' && preselectSelect) {
+            defaultfrequency = `&defaultfrequency=${preselectSelect.value}`;
+        } else {
+            defaultfrequency = ''; // Reset if Preselect is hidden
+        }
+        console.log("Updated defaultfrequency:", defaultfrequency); // Debugging log
+    }
+
           // Update Default Values when either Amount Group or Frequency changes
           amountGroupSelect.addEventListener('change', updateDefaultValues);
+          preselectSelect.addEventListener('change', updateDefaultFrequency); // Listen for Preselect changes
 
           frequencySelect.addEventListener('change', function() {
     console.log("Frequency dropdown changed to:", frequencySelect.value);
