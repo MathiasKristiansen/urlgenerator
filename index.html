@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="style.css">
     <script>
 
+
+      // Default values in form
+
       var defaultValueOptions = {
             'One-time':{
                   'lowest': ['150', '300', '500'],
@@ -28,16 +31,33 @@
               ['325', '450', '600']
             
           };
+
+      // Listening for changes in frequency
       
       document.addEventListener('DOMContentLoaded', function() {
           var amountGroupSelect = document.getElementById('amountgroup');
           var frequencySelect = document.getElementById('frequency');
+          var preselectContainer = document.getElementById('preselect-container'); // Container for the Preselect field
+          var preselectSelect = document.getElementById('preselect'); // Preselect dropdown
+          var defaultfrequency
+
 
           function updateDefaultValues() {
               var amountgroup = amountGroupSelect.value;
               var frequency = frequencySelect.value;
               var defaultvalueSelect = document.getElementById('defaultvalue');
               defaultvalueSelect.innerHTML = ''; // Clear existing options
+
+                      // Show or hide the Preselect field based on the "Both" condition
+              if (frequency === 'Both') {
+                 preselectContainer.style.display = 'block'; // Show Preselect dropdown
+              } else {
+                 preselectContainer.style.display = 'none'; // Hide Preselect dropdown
+              }
+
+              if (preselectSelect === undefined) {
+                defaultfrequency = ''
+              } else defaultfrequency = `&defaultfrequency=${preselectSelect.value}`
 
               var frequencyOptions = defaultValueOptions[frequency];
 
@@ -102,22 +122,21 @@
 
       function generateURL() {
         try {
-          // Checking for elements and their values
+          // Fetching and converting values from the form
           var channel = encodeURIComponent(document.getElementById('channel').value);
           var amountgroup = document.getElementById('amountgroup').value;
           var frequency = document.getElementById('frequency').value;
-          console.log("Frequency in generateURL:", frequency);
           var baseURL = document.getElementById('url').value;
           var campaign = encodeURIComponent(document.getElementById('campaignid').value);
           var defaultvalue = document.getElementById('defaultvalue').value;
 
           var amountgroupurl;
           if (amountgroup) {
-          amountgroupurl = `amountgroup=${amountgroup}&`
+          amountgroupurl = `amountgroup=${amountgroup}&` 
           } else 
-          amountgroupurl = "";
+          amountgroupurl = ""; // Removes Amount Group parameter if it doesn't have a valid value
 
-
+          // Attributes a number value to the amount group
           var amountgroupintMap = {
             lowest: 1,
             low: 2,
@@ -126,8 +145,10 @@
             highest: 5
           };
 
-          var default_value_int = amountgroupintMap[amountgroup] || 3
+          var default_value_int = amountgroupintMap[amountgroup] || 3 // Defaults to medium (3)
 
+
+          // Attributes a character based on the chosen frequency
           var amountgroupchar;
           if (frequency == "Monthly") {
             amountgroupchar = "m";
@@ -139,13 +160,13 @@
 
           var default_value_code = amountgroupchar.concat(default_value_int.toString());
           var default_value = document.getElementById('defaultvalue').value;
+        
 
 
 
 
 
-
-
+          //UTM parameters
           var ga_medium = channel;
           var ga_source;
           if (['SMS', 'Newsletter', 'Email'].includes(channel)) {
@@ -162,7 +183,7 @@
 
 
 
-          var generatedURL = `${baseURL}?&frequency=${frequency}&${amountgroupurl}${default_value_code}=${default_value}&channel=${channel}&campaignid=${campaign}&source=${ga_source}&medium=${ga_medium}`;
+          var generatedURL = `${baseURL}?&frequency=${frequency}${defaultfrequency}&${amountgroupurl}${default_value_code}=${default_value}&channel=${channel}&campaignid=${campaign}&utm_source=${ga_source}&utm_medium=${ga_medium}`;
 
           document.getElementById('generatedURL').value = generatedURL;
           console.log("Generated URL: ", generatedURL);
@@ -206,6 +227,14 @@
         <option value="Monthly">Regular Donation</option>
         <option value="Both">Both</option>
     </select>
+
+    <div id="preselect-container" style="display: none;">
+      <label for="preselect">Preselect</label>
+      <select id="preselect">
+          <option value="Monthly">Monthly</option>
+          <option value="One-time">One-time</option>
+      </select>
+  </div>
 
     <label for="channel">Channel:</label>
     <select id="channel" name="channel" required>
