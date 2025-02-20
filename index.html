@@ -1,305 +1,373 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate URL from Multiple Inputs</title>
-    <link rel="stylesheet" href="style.css">
-    <script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate URL from Multiple Inputs</title>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    // -----------------------------
+    // Default value objects
+    // -----------------------------
+    var defaultValueOptionsNO = {
+      'One-time': {
+        'lowest':  ['150', '300', '500'],
+        'low':     ['300', '500', '800'],
+        'medium':  ['500', '800', '1000'],
+        'high':    ['1000', '1500', '2000'],
+        'highest': ['2000', '2500', '3000']
+      },
+      'Monthly': {
+        'lowest':  ['150', '200', '300'],
+        'low':     ['200', '300', '400'],
+        'medium':  ['250', '350', '500'],
+        'high':    ['500', '650', '800'],
+        'highest': ['750', '900', '1000']
+      },
+      'Both': ['250', '350', '500']
+    };
 
+    var defaultValueOptionsSE = {
+      'One-time': {
+        'lowest':  ['150', '300', '500'],
+        'low':     ['300', '500', '800'],
+        'medium':  ['500', '800', '1000'],
+        'high':    ['1000', '1500', '2000'],
+        'highest': ['2000', '2500', '3000']
+      },
+      'Monthly': {
+        'lowest':  ['150', '200', '300'],
+        'low':     ['200', '300', '400'],
+        'medium':  ['250', '350', '500'],
+        'high':    ['500', '650', '800'],
+        'highest': ['750', '900', '1000']
+      },
+      'Both': ['250', '350', '500']
+    };
 
-      // Default values in form
+    var defaultValueOptionsGE = {
+      'One-time': {
+        'lowest':  ['150', '300', '500'],
+        'low':     ['300', '500', '800'],
+        'medium':  ['500', '800', '1000'],
+        'high':    ['1000', '1500', '2000'],
+        'highest': ['2000', '2500', '3000']
+      },
+      'Monthly': {
+        'lowest':  ['150', '200', '300'],
+        'low':     ['200', '300', '400'],
+        'medium':  ['250', '350', '500'],
+        'high':    ['500', '650', '800'],
+        'highest': ['750', '900', '1000']
+      },
+      'Both': ['250', '350', '500']
+    };
 
-      var defaultValueOptions = {
-            'One-time':{
-                  'lowest': ['150', '300', '500'],
-                  'low': ['300', '500', '800'],
-                  'medium': ['500', '800', '1000'],
-                  'high': ['1000', '1500', '2000'],
-                  'highest': ['2000', '2500', '3000']
-            },
+    var defaultValueOptionsGL = {
+      'One-time': {
+        'lowest':  ['150', '300', '500'],
+        'low':     ['300', '500', '800'],
+        'medium':  ['500', '800', '1000'],
+        'high':    ['1000', '1500', '2000'],
+        'highest': ['2000', '2500', '3000']
+      },
+      'Monthly': {
+        'lowest':  ['150', '200', '300'],
+        'low':     ['200', '300', '400'],
+        'medium':  ['250', '350', '500'],
+        'high':    ['500', '650', '800'],
+        'highest': ['750', '900', '1000']
+      },
+      'Both': ['250', '350', '500']
+    };
 
-            'Monthly': {
-                  'lowest': ['150', '200', '300'],
-                  'low': ['200', '300', '400'],
-                  'medium': ['250', '350', '500'],
-                  'high': ['500', '650', '800'],
-                  'highest': ['750', '900', '1000']
-            },
+    // Will hold whichever set of defaults we pick based on market
+    var defaultValueOptions = {};
+    var defaultfrequency = "";
 
-            'Both': 
-              ['250', '350', '500']
-            
-          };
+    document.addEventListener('DOMContentLoaded', function() {
+      // Grab DOM elements
+      var marketSelect         = document.getElementById('market');
+      var frequencySelect      = document.getElementById('frequency');
+      var amountGroupSelect    = document.getElementById('amountgroup');
+      var defaultvalueSelect   = document.getElementById('defaultvalue');
+      var preselectContainer   = document.getElementById('preselect-container');
+      var preselectSelect      = document.getElementById('preselect');
+      var amountGroupContainer = document.getElementById('amountGroupContainer');
 
-      var defaultfrequency = '';
+      // -----------------------------
+      // Update which default object we use based on selected market
+      // -----------------------------
+      function updateMarketDefaults() {
+        var market = marketSelect.value;
+        if (market === "Norway") {
+          defaultValueOptions = defaultValueOptionsNO;
+        } else if (market === "Germany") {
+          defaultValueOptions = defaultValueOptionsGE;
+        } else if (market === "Sweden") {
+          defaultValueOptions = defaultValueOptionsSE;
+        } else {
+          defaultValueOptions = defaultValueOptionsGL;
+        }
+        console.log("Market changed, updated defaultValueOptions:", defaultValueOptions);
+      }
 
-      // Listening for changes in frequency
-      
-      document.addEventListener('DOMContentLoaded', function() {
-          var amountGroupSelect = document.getElementById('amountgroup');
-          var frequencySelect = document.getElementById('frequency');
-          var preselectContainer = document.getElementById('preselect-container'); // Container for the Preselect field
-          var preselectSelect = document.getElementById('preselect'); // Preselect dropdown
+      // -----------------------------
+      // Update available default values (populates #defaultvalue)
+      // -----------------------------
+      function updateDefaultValues() {
+        // First ensure we have the right object for our selected market
+        updateMarketDefaults();
 
+        var amountgroup = amountGroupSelect.value;
+        var frequency   = frequencySelect.value;
 
+        // Clear existing options
+        defaultvalueSelect.innerHTML = "";
 
-          function updateDefaultValues() {
-              var amountgroup = amountGroupSelect.value;
-              var frequency = frequencySelect.value;
-              var defaultvalueSelect = document.getElementById('defaultvalue');
-              defaultvalueSelect.innerHTML = ''; // Clear existing options
+        // If frequency is "Both", show the Preselect field
+        if (frequency === 'Both') {
+          preselectContainer.style.display = 'block';
+        } else {
+          preselectContainer.style.display = 'none';
+        }
 
-                      // Show or hide the Preselect field based on the "Both" condition
-              if (frequency === 'Both') {
-                 preselectContainer.style.display = 'block'; // Show Preselect dropdown
-              } else {
-                 preselectContainer.style.display = 'none'; // Hide Preselect dropdown
-              }
+        // If Preselect is visible, store it in defaultfrequency
+        if (preselectContainer.style.display !== 'none') {
+          defaultfrequency = "&frequencydefault=" + preselectSelect.value;
+        } else {
+          defaultfrequency = "";
+        }
 
-              if (preselectSelect && preselectContainer.style.display !== 'none') {
-                 defaultfrequency = `&frequencydefault=${preselectSelect.value}`;
-              } else {
-                  defaultfrequency = ''; // Reset if Preselect is hidden or not available
-              }
-
-
-              var frequencyOptions = defaultValueOptions[frequency];
-
-              if (frequencyOptions) {
-                  var options;
-                  if (Array.isArray(frequencyOptions)) {
-                      // If frequencyOptions is an array (e.g., 'Both')
-                      options = frequencyOptions;
-                  } else if (frequencyOptions[amountgroup]) {
-                      // If frequencyOptions is an object, get options based on amountgroup
-                      options = frequencyOptions[amountgroup];
-                  }
-
-                  if (options && options.length > 0) {
-                      options.forEach(function(option) {
-                          var opt = document.createElement('option');
-                          opt.value = option;
-                          opt.text = option;
-                          defaultvalueSelect.add(opt);
-                      });
-                  } else {
-                      // If no options are available
-                      var opt = document.createElement('option');
-                      opt.value = '';
-                      opt.text = 'No options available';
-                      defaultvalueSelect.add(opt);
-                  }
-              } else {
-                  // If frequencyOptions is undefined
-                  var opt = document.createElement('option');
-                  opt.value = '';
-                  opt.text = 'No options available';
-                  defaultvalueSelect.add(opt);
-              }
+        // Grab the correct chunk of defaults
+        var frequencyOptions = defaultValueOptions[frequency];
+        if (frequencyOptions) {
+          var options;
+          // "Both" is an array
+          if (Array.isArray(frequencyOptions)) {
+            options = frequencyOptions;
+          } 
+          // Otherwise it's an object with 'lowest', 'low', 'medium', etc.
+          else if (frequencyOptions[amountgroup]) {
+            options = frequencyOptions[amountgroup];
           }
 
-          function updateDefaultFrequency() {
-        if (preselectContainer.style.display !== 'none' && preselectSelect) {
-            defaultfrequency = `&frequencydefault=${preselectSelect.value}`;
+          // Populate the #defaultvalue dropdown
+          if (options && options.length > 0) {
+            options.forEach(function (val) {
+              var opt  = document.createElement('option');
+              opt.value = val;
+              opt.text  = val;
+              defaultvalueSelect.add(opt);
+            });
+          } else {
+            defaultvalueSelect.innerHTML = '<option>No options available</option>';
+          }
         } else {
-            defaultfrequency = ''; // Reset if Preselect is hidden
+          defaultvalueSelect.innerHTML = '<option>No options available</option>';
         }
-        console.log("Updated defaultfrequency:", defaultfrequency); // Debugging log
-    }
+      }
 
-          // Update Default Values when either Amount Group or Frequency changes
-          amountGroupSelect.addEventListener('change', updateDefaultValues);
-          preselectSelect.addEventListener('change', updateDefaultFrequency); // Listen for Preselect changes
+      // -----------------------------
+      // If user changes the preselect dropdown, update the defaultfrequency
+      // -----------------------------
+      function updateDefaultFrequency() {
+        if (preselectContainer.style.display !== 'none') {
+          defaultfrequency = "&frequencydefault=" + preselectSelect.value;
+        } else {
+          defaultfrequency = "";
+        }
+        console.log("Updated defaultfrequency:", defaultfrequency);
+      }
 
-          frequencySelect.addEventListener('change', function() {
-    console.log("Frequency dropdown changed to:", frequencySelect.value);
-    updateDefaultValues();
+      // -----------------------------
+      // Event listeners
+      // -----------------------------
+      amountGroupSelect.addEventListener('change', updateDefaultValues);
+      preselectSelect.addEventListener('change', updateDefaultFrequency);
 
-    var amountGroupContainer = document.getElementById('amountGroupContainer');
-    var amountGroupSelect = document.getElementById('amountgroup');
+      frequencySelect.addEventListener('change', function () {
+        updateDefaultValues();
 
-    if (frequencySelect.value === 'Both') {
-        amountGroupSelect.value = ''; // Reset selection
-        amountGroupSelect.removeAttribute('required'); // Remove 'required' if hidden
-        amountGroupContainer.style.display = 'none'; // Hide the field
-    } else {
-        amountGroupSelect.setAttribute('required', true); // Ensure it's required for other frequencies
-        amountGroupContainer.style.display = 'block'; // Show the field
-    }
-});
-
-
-          // Initialize Default Values on page load
-          updateDefaultValues();
+        // Hide/show the Amount Group field if frequency is "Both"
+        if (frequencySelect.value === 'Both') {
+          amountGroupSelect.value = "";
+          amountGroupSelect.removeAttribute('required');
+          amountGroupContainer.style.display = 'none';
+        } else {
+          amountGroupSelect.setAttribute('required', true);
+          amountGroupContainer.style.display = 'block';
+        }
       });
 
+      // Initialize on page load
+      updateMarketDefaults();
+      updateDefaultValues();
+    });
 
-      function generateURL() {
-        try {
-          // Fetching and converting values from the form
-          var channel = encodeURIComponent(document.getElementById('channel').value);
-          var amountgroup = document.getElementById('amountgroup').value;
-          var frequency = document.getElementById('frequency').value;
-          var baseURL = document.getElementById('url').value;
-          var campaign = encodeURIComponent(document.getElementById('campaignid').value);
-          var defaultvalue = document.getElementById('defaultvalue').value;
+    // -----------------------------
+    // Generate URL function
+    // -----------------------------
+    function generateURL() {
+      try {
+        var channel     = encodeURIComponent(document.getElementById('channel').value);
+        var amountgroup = document.getElementById('amountgroup').value;
+        var baseURL     = document.getElementById('url').value;
+        var frequency   = document.getElementById('frequency').value;
+        var campaign    = encodeURIComponent(document.getElementById('campaignid').value);
+        var defaultval  = document.getElementById('defaultvalue').value;
 
-          var amountgroupurl;
-          if (amountgroup) {
-          amountgroupurl = `amountgroup=${amountgroup}&` 
-          } else 
-          amountgroupurl = ""; // Removes Amount Group parameter if it doesn't have a valid value
+        // Build the amountGroup param only if user selected something
+        var amountgroupurl = amountgroup ? ("amountgroup=" + amountgroup + "&") : "";
 
-          // Attributes a number value to the amount group
-          var amountgroupintMap = {
-            lowest: 1,
-            low: 2,
-            medium: 3,
-            high: 4,
-            highest: 5
-          };
+        // Map the amount group to an integer
+        var amountgroupintMap = {
+          lowest:  1,
+          low:     2,
+          medium:  3,
+          high:    4,
+          highest: 5
+        };
+        var default_value_int = amountgroupintMap[amountgroup] || 3; // default to 3 if unknown
 
-          var default_value_int = amountgroupintMap[amountgroup] || 3 // Defaults to medium (3)
-
-
-          // Attributes a character based on the chosen frequency
-          var amountgroupchar;
-          if (frequency == "Monthly") {
-            amountgroupchar = "m";
-          } else if (frequency == "One-time") {
-            amountgroupchar = "o";
-          }  else {
-            amountgroupchar = ""
-          }
-
-          var default_value_code = amountgroupchar.concat(default_value_int.toString());
-          var default_value = document.getElementById('defaultvalue').value;
-        
-
-
-
-
-
-          //UTM parameters
-          var ga_medium = channel;
-          var ga_source;
-          if (['SMS', 'Newsletter', 'Email'].includes(channel)) {
-            ga_source = encodeURIComponent('Marketing Cloud');
-          } else if (['Facebook', 'Google', 'Bing'].includes(channel)) {
-            ga_source = encodeURIComponent('Advertising Studio');
-          } else {
-            ga_source = encodeURIComponent('Unknown');
-          }
-          var ad_content = encodeURIComponent(document.getElementById('adcontent').value);
-
-          console.log("Frequency selected before generating URL:", frequency);
-
-
-
-
-          var generatedURL = `${baseURL}?frequency=${frequency}${defaultfrequency}&${amountgroupurl}${default_value_code}=${default_value}&channel=${channel}&campaignid=${campaign}&utm_source=${ga_source}&utm_medium=${ga_medium}`;
-
-          document.getElementById('generatedURL').value = generatedURL;
-          console.log("Generated URL: ", generatedURL);
-          return false;
-        } catch (error) {
-          console.error("Error generating URL: ", error);
-          alert("Error generating URL: " + error.message);
-          return false;
+        // Add a prefix character for monthly/one-time
+        var amountgroupchar;
+        if (frequency === "Monthly") {
+          amountgroupchar = "m";
+        } else if (frequency === "One-time") {
+          amountgroupchar = "o";
+        } else {
+          amountgroupchar = "";
         }
+        var default_value_code = amountgroupchar + default_value_int.toString();
+
+        // Build UTM parameters
+        var ga_medium = channel;
+        var ga_source;
+        if (["SMS", "Newsletter", "Email"].includes(channel)) {
+          ga_source = encodeURIComponent("Marketing Cloud");
+        } else if (["Facebook", "Google", "Bing"].includes(channel)) {
+          ga_source = encodeURIComponent("Advertising Studio");
+        } else {
+          ga_source = encodeURIComponent("Unknown");
+        }
+        var ad_content = encodeURIComponent(document.getElementById('adcontent').value);
+
+        // Construct the final URL
+        var generatedURL = baseURL + "?"
+          + "frequency=" + frequency
+          + defaultfrequency + "&"
+          + amountgroupurl
+          + default_value_code + "=" + defaultval
+          + "&channel="    + channel
+          + "&campaignid=" + campaign
+          + "&utm_source=" + ga_source
+          + "&utm_medium=" + ga_medium;
+
+        document.getElementById('generatedURL').value = generatedURL;
+        console.log("Generated URL:", generatedURL);
+        return false;
+      } catch (error) {
+        console.error("Error generating URL:", error);
+        alert("Error generating URL: " + error.message);
+        return false;
       }
+    }
 
+    // -----------------------------
+    // Copy to clipboard function
+    // -----------------------------
+    function copyToClipboard() {
+      var copyText = document.getElementById('generatedURL');
+      copyText.select();
+      document.execCommand('copy');
 
-
-
-      function copyToClipboard() {
-        var copyText = document.getElementById('generatedURL');
-        copyText.select();
-        document.execCommand('copy');
-
-        var feedback = document.getElementById('copyFeedback');
-        feedback.style.display = 'block';
-
-        setTimeout(function() {
-          feedback.style.display = 'none';
-        }, 2000);
-      }
-    </script>
+      var feedback = document.getElementById('copyFeedback');
+      feedback.style.display = 'block';
+      setTimeout(function() {
+        feedback.style.display = 'none';
+      }, 2000);
+    }
+  </script>
 </head>
 <body>
-
-<h2>Generate URL</h2>
-
-<form onsubmit="return generateURL()">
+  <h2>Generate URL</h2>
+  <form onsubmit="return generateURL()">
     <label for="url">URL:</label>
     <input type="text" id="url" name="url" required>
 
+    <label for="market">Market</label>
+    <select id="market" name="market" required>
+      <option value="" disabled selected>Select</option>
+      <option value="Norway">Norway</option>
+      <option value="Germany">Germany</option>
+      <option value="Sweden">Sweden</option>
+      <option value="Global">Global</option>
+    </select>
+
     <label for="frequency">Choose Donation Type:</label>
     <select id="frequency" name="frequency" required>
-        <option value="" disabled selected>Select</option>
-        <option value="One-time">Single Donation</option>
-        <option value="Monthly">Regular Donation</option>
-        <option value="Both">Both</option>
+      <option value="" disabled selected>Select</option>
+      <option value="One-time">Single Donation</option>
+      <option value="Monthly">Regular Donation</option>
+      <option value="Both">Both</option>
     </select>
 
     <div id="preselect-container" style="display: none;">
       <label for="preselect">Preselect</label>
       <select id="preselect">
-          <option value="Monthly">Monthly</option>
-          <option value="One-time">One-time</option>
+        <option value="Monthly">Monthly</option>
+        <option value="One-time">One-time</option>
       </select>
-  </div>
+    </div>
 
     <label for="channel">Channel:</label>
     <select id="channel" name="channel" required>
-        <option value="" disabled selected>Select</option>
-        <option value="Newsletter">Newsletter</option>
-        <option value="Facebook">Facebook</option>
-        <option value="instagram">Instagram</option>
-        <option value="fieldmarketing">Field Marketing</option>
-        <option value="Google">Google</option>
-        <option value="Bing">Bing</option>
-        <option value="Email">Email</option>
-        <option value="youtube">Youtube</option>
-        <option value="SMS">SMS</option>
-        <option value="Web">Web</option>
-        <option value="Direct mail">Direct Mail</option>
+      <option value="" disabled selected>Select</option>
+      <option value="Newsletter">Newsletter</option>
+      <option value="Facebook">Facebook</option>
+      <option value="instagram">Instagram</option>
+      <option value="fieldmarketing">Field Marketing</option>
+      <option value="Google">Google</option>
+      <option value="Bing">Bing</option>
+      <option value="Email">Email</option>
+      <option value="youtube">Youtube</option>
+      <option value="SMS">SMS</option>
+      <option value="Web">Web</option>
+      <option value="Direct mail">Direct Mail</option>
     </select>
 
     <label for="campaignid">Campaign ID:</label>
-    <input type="text" id="campaignid" name="campaignid" >
+    <input type="text" id="campaignid" name="campaignid">
 
     <div id="amountGroupContainer">
-    <label for="amountgroup">Amount Group:</label>
-    <select id="amountgroup" name="amountgroup" required>
-        <option value="" disabled selected>Select</option> 
+      <label for="amountgroup">Amount Group:</label>
+      <select id="amountgroup" name="amountgroup" required>
+        <option value="" disabled selected>Select</option>
         <option value="lowest">Lowest</option>
         <option value="low">Low</option>
         <option value="medium">Medium</option>
         <option value="high">High</option>
-        <option value="highest">Highest</option> 
-    </select>
-</div>
-
+        <option value="highest">Highest</option>
+      </select>
+    </div>
 
     <label for="defaultvalue">Default Value:</label>
     <select id="defaultvalue" name="defaultvalue" required>
-        <option value="" disabled selected>Select an amount group first</option>
+      <option value="" disabled selected>Select an amount group first</option>
     </select>
-
 
     <label for="adcontent">GA Ad Content:</label>
     <input type="text" id="adcontent" name="adcontent">
 
     <input type="submit" value="Generate URL">
-</form>
+  </form>
 
-<div id="copyFeedback" class="copy-feedback" style="display: none;">URL copied to clipboard!</div>
-<textarea id="generatedURL" class="generated-url-output" rows="3" readonly></textarea>
-<button onclick="copyToClipboard()">Copy URL</button>
+  <div id="copyFeedback" class="copy-feedback" style="display: none;">
+    URL copied to clipboard!
+  </div>
 
-//update code//
-
+  <textarea id="generatedURL" class="generated-url-output" rows="3" readonly></textarea>
+  <button onclick="copyToClipboard()">Copy URL</button>
 </body>
 </html>
