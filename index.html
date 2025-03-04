@@ -85,6 +85,7 @@
     var defaultValueOptions = {};
     var defaultfrequency = "";
 
+
     document.addEventListener('DOMContentLoaded', function() {
       // Grab DOM elements
       var marketSelect         = document.getElementById('market');
@@ -140,15 +141,10 @@
         }
 
         // Grab the correct chunk of defaults
-        var frequencyOptions = defaultValueOptions[frequency];
+        var frequencyOptions = defaultValueOptions[preselectSelect.value];
         if (frequencyOptions) {
           var options;
-          // "Both" is an array
-          if (Array.isArray(frequencyOptions)) {
-            options = frequencyOptions;
-          } 
-          // Otherwise it's an object with 'lowest', 'low', 'medium', etc.
-          else if (frequencyOptions[amountgroup]) {
+          if (frequencyOptions[amountgroup]) {
             options = frequencyOptions[amountgroup];
           }
 
@@ -189,16 +185,7 @@
       frequencySelect.addEventListener('change', function () {
         updateDefaultValues();
 
-        // Hide/show the Amount Group field if frequency is "Both"
-        if (frequencySelect.value === 'Both') {
-          amountGroupSelect.value = "";
-          amountGroupSelect.removeAttribute('required');
-          amountGroupContainer.style.display = 'none';
-        } else {
-          amountGroupSelect.setAttribute('required', true);
-          amountGroupContainer.style.display = 'block';
-        }
-      });
+      })
 
       // Initialize on page load
       updateMarketDefaults();
@@ -216,6 +203,7 @@
         var frequency   = document.getElementById('frequency').value;
         var campaign    = encodeURIComponent(document.getElementById('campaignid').value);
         var defaultval  = document.getElementById('defaultvalue').value;
+        var preselectSelect = document.getElementById('preselect');
 
         // Build the amountGroup param only if user selected something
         var amountgroupurl = amountgroup ? ("amountgroup=" + amountgroup + "&") : "";
@@ -232,9 +220,9 @@
 
         // Add a prefix character for monthly/one-time
         var amountgroupchar;
-        if (frequency === "Monthly") {
+        if (frequency === "Monthly" || preselectSelect.value === "Monthly") {
           amountgroupchar = "m";
-        } else if (frequency === "One-time") {
+        } else if (frequency === "One-time" || preselectSelect.value === "One-time") {
           amountgroupchar = "o";
         } else {
           amountgroupchar = "";
