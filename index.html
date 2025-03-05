@@ -24,7 +24,6 @@
         'high':    ['500', '650', '800'],
         'highest': ['750', '900', '1000']
       },
-      'Both': ['250', '350', '500']
     };
 
     var defaultValueOptionsSE = {
@@ -42,7 +41,6 @@
         'high':    ['400', '600', '800'],
         'highest': ['500', '750', '1000']
       },
-      'Both': ['250', '350', '500']
     };
 
     var defaultValueOptionsGE = {
@@ -60,7 +58,6 @@
         'high':    ['30', '60', '90'],
         'highest': ['40', '90', '150']
       },
-      'Both': ['250', '350', '500']
     };
 
     var defaultValueOptionsGL = {
@@ -78,7 +75,6 @@
         'high':    ['500', '650', '800'],
         'highest': ['750', '900', '1000']
       },
-      'Both': ['250', '350', '500']
     };
 
     // Will hold whichever set of defaults we pick based on market
@@ -220,9 +216,9 @@
 
         // Add a prefix character for monthly/one-time
         var amountgroupchar;
-        if (frequency === "Monthly" || preselectSelect.value === "Monthly") {
+        if (frequency === "Monthly") {
           amountgroupchar = "m";
-        } else if (frequency === "One-time" || preselectSelect.value === "One-time") {
+        } else if (frequency === "One-time") {
           amountgroupchar = "o";
         } else {
           amountgroupchar = "";
@@ -323,6 +319,7 @@
       <option value="SMS">SMS</option>
       <option value="Web">Web</option>
       <option value="Direct mail">Direct Mail</option>
+      <option value="Other">Other</option>
     </select>
 
     <label for="campaignid">Campaign ID:</label>
@@ -346,7 +343,7 @@
     </select>
 
     <label for="adcontent">GA Ad Content:</label>
-    <input type="text" id="adcontent" name="adcontent">
+    <input type="hidden" id="adcontent" name="adcontent">
 
     <input type="submit" value="Generate URL">
   </form>
