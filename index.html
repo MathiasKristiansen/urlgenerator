@@ -45,41 +45,42 @@
 
     var defaultValueOptionsGE = {
       'One-time': {
-        'lowest':  ['10', '30', '60'],
-        'low':     ['15', '40', '80'],
-        'medium':  ['25', '50', '100'],
-        'high':    ['40', '90', '140'],
-        'highest': ['80', '140', '190']
+        'lowest':  ['10', '25', '55'],
+        'low':     ['25', '55', '86'],
+        'medium':  ['55', '86', '116'],
+        'high':    ['86', '116', '225'],
+        'highest': ['116', '225', '356']
       },
       'Monthly': {
-        'lowest':  ['10', '20', '40'],
-        'low':     ['20', '40', '60'],
-        'medium':  ['25', '50', '70'],
-        'high':    ['30', '60', '90'],
-        'highest': ['40', '90', '150']
+        'lowest':  ['10', '25', '50'],
+        'low':     ['10', '25', '50'],
+        'medium':  ['25', '50', '76'],
+        'high':    ['50', '76', '100'],
+        'highest': ['76', '100', '150']
       },
     };
 
     var defaultValueOptionsGL = {
       'One-time': {
-        'lowest':  ['150', '300', '500'],
-        'low':     ['300', '500', '800'],
-        'medium':  ['500', '800', '1000'],
-        'high':    ['1000', '1500', '2000'],
-        'highest': ['2000', '2500', '3000']
+        'lowest':  ['15', '45', '85'],
+        'low':     ['25', '50', '95'],
+        'medium':  ['35', '65', '125'],
+        'high':    ['55', '85', '145'],
+        'highest': ['85', '145', '295']
       },
       'Monthly': {
-        'lowest':  ['150', '200', '300'],
-        'low':     ['200', '300', '400'],
-        'medium':  ['250', '350', '500'],
-        'high':    ['500', '650', '800'],
-        'highest': ['750', '900', '1000']
+        'lowest':  ['10', '25', '55'],
+        'low':     ['20', '45', '80'],
+        'medium':  ['25', '55', '85'],
+        'high':    ['35', '55', '95'],
+        'highest': ['45', '95', '115']
       },
     };
 
     // Will hold whichever set of defaults we pick based on market
     var defaultValueOptions = {};
-    var defaultfrequency = "";
+    var tableauURL = "";
+
 
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -112,81 +113,61 @@
       // -----------------------------
       // Update available default values (populates #defaultvalue)
       // -----------------------------
-      function updateDefaultValues() {
-        // First ensure we have the right object for our selected market
-        updateMarketDefaults();
+     function updateDefaultValues() {
+  updateMarketDefaults();
 
-        var amountgroup = amountGroupSelect.value;
-        var frequency   = frequencySelect.value;
+  var amountgroup = amountGroupSelect.value;
+  var frequency   = frequencySelect.value;
 
-        // Clear existing options
-        defaultvalueSelect.innerHTML = "";
+  // Clear existing options
+  defaultvalueSelect.innerHTML = "";
 
-        // If frequency is "Both", show the Preselect field
-        if (frequency === 'Both') {
-          preselectContainer.style.display = 'block';
-        } else {
-          preselectContainer.style.display = 'none';
-        }
+  // Handle "Both" case
+  if (frequency === 'Both') {
+    preselectContainer.style.display = 'block';
+    defaultvalueSelect.innerHTML = '<option value="">No default for Both</option>';
+    return; // Skip populating values
+  } else {
+    preselectContainer.style.display = 'none';
+  }
 
-        // If Preselect is visible, store it in defaultfrequency
-        if (preselectContainer.style.display !== 'none') {
-          defaultfrequency = "&frequencydefault=" + preselectSelect.value;
-        } else {
-          defaultfrequency = "";
-        }
+  // Get the correct frequency options (Monthly or One-time)
+  var frequencyOptions = defaultValueOptions[frequency];
 
-        // Grab the correct chunk of defaults
-        var frequencyOptions = defaultValueOptions[preselectSelect.value];
-        if (frequencyOptions) {
-          var options;
-          if (frequencyOptions[amountgroup]) {
-            options = frequencyOptions[amountgroup];
-          }
+  if (frequencyOptions && frequencyOptions[amountgroup]) {
+    var options = frequencyOptions[amountgroup];
 
-          // Populate the #defaultvalue dropdown
-          if (options && options.length > 0) {
-            options.forEach(function (val) {
-              var opt  = document.createElement('option');
-              opt.value = val;
-              opt.text  = val;
-              defaultvalueSelect.add(opt);
-            });
-          } else {
-            defaultvalueSelect.innerHTML = '<option>No options available</option>';
-          }
-        } else {
-          defaultvalueSelect.innerHTML = '<option>No options available</option>';
-        }
-      }
-
-      // -----------------------------
-      // If user changes the preselect dropdown, update the defaultfrequency
-      // -----------------------------
-      function updateDefaultFrequency() {
-        if (preselectContainer.style.display !== 'none') {
-          defaultfrequency = "&frequencydefault=" + preselectSelect.value;
-        } else {
-          defaultfrequency = "";
-        }
-        console.log("Updated defaultfrequency:", defaultfrequency);
-      }
-
-      // -----------------------------
-      // Event listeners
-      // -----------------------------
-      amountGroupSelect.addEventListener('change', updateDefaultValues);
-      preselectSelect.addEventListener('change', updateDefaultFrequency);
-
-      frequencySelect.addEventListener('change', function () {
-        updateDefaultValues();
-
-      })
-
-      // Initialize on page load
-      updateMarketDefaults();
-      updateDefaultValues();
+    options.forEach(function (val) {
+      var opt = document.createElement('option');
+      opt.value = val;
+      opt.text = val;
+      defaultvalueSelect.add(opt);
     });
+  } else {
+    defaultvalueSelect.innerHTML = '<option>No options available</option>';
+  }
+}
+
+
+
+  // -----------------------------
+  function updateDefaultFrequency() {
+    // You can remove this if you no longer use defaultfrequency globally
+    console.log("Preselect changed to:", preselectSelect.value);
+  }
+
+  // -----------------------------
+  // Event listeners
+  // -----------------------------
+  amountGroupSelect.addEventListener('change', updateDefaultValues);
+  preselectSelect.addEventListener('change', updateDefaultFrequency);
+  frequencySelect.addEventListener('change', updateDefaultValues);
+
+  // Initialize on page load
+  updateMarketDefaults();
+  updateDefaultValues();
+});
+
 
     // -----------------------------
     // Generate URL function
@@ -226,27 +207,23 @@
         var default_value_code = amountgroupchar + default_value_int.toString();
 
         // Build UTM parameters
-        var ga_medium = channel;
-        var ga_source;
-        if (["SMS", "Newsletter", "Email"].includes(channel)) {
-          ga_source = encodeURIComponent("Marketing Cloud");
-        } else if (["Facebook", "Google", "Bing"].includes(channel)) {
-          ga_source = encodeURIComponent("Advertising Studio");
-        } else {
-          ga_source = encodeURIComponent("Unknown");
-        }
+        var utm_medium = channel;
+        var utm_source = encodeURIComponent(document.getElementById('utmsource').value);
         var ad_content = encodeURIComponent(document.getElementById('adcontent').value);
 
         // Construct the final URL
         var generatedURL = baseURL + "?"
           + "frequency=" + frequency
-          + defaultfrequency + "&"
+          + (frequency === "Both" ? "&frequencydefault=" + preselectSelect.value : "") + "&"
           + amountgroupurl
           + default_value_code + "=" + defaultval
           + "&channel="    + channel
           + "&campaignid=" + campaign
-          + "&utm_source=" + ga_source
-          + "&utm_medium=" + ga_medium;
+          + "&utm_source=" + utm_source
+          + "&utm_medium=" + utm_medium;
+
+
+        tableauURL = 'https://eu-west-1a.online.tableau.com/#/site/norwegianrefugeecouncil/views/CampaignResults/Dashboard1?utmsource=' + utm_source
 
         document.getElementById('generatedURL').value = generatedURL;
         console.log("Generated URL:", generatedURL);
@@ -257,6 +234,15 @@
         return false;
       }
     }
+
+    function openTableau() {
+  if (tableauURL) {
+    window.open(tableauURL, '_blank');
+  } else {
+    alert("Please generate a URL first.");
+  }
+}
+
 
     // -----------------------------
     // Copy to clipboard function
@@ -325,6 +311,10 @@
     <label for="campaignid">Campaign ID:</label>
     <input type="text" id="campaignid" name="campaignid">
 
+    <label for="utmsource">UTM Source:</label>
+    <input type="text" id="utmsource" name="utmsource">
+    <span style="color: gray; font-size: 0.9em;"> Name of your campaign/activity</span>
+
     <div id="amountGroupContainer">
       <label for="amountgroup">Amount Group:</label>
       <select id="amountgroup" name="amountgroup" required>
@@ -338,7 +328,7 @@
     </div>
 
     <label for="defaultvalue">Default Value:</label>
-    <select id="defaultvalue" name="defaultvalue" required>
+    <select id="defaultvalue" name="defaultvalue" >
       <option value="" disabled selected>Select an amount group first</option>
     </select>
 
@@ -352,7 +342,21 @@
     URL copied to clipboard!
   </div>
 
-  <textarea id="generatedURL" class="generated-url-output" rows="3" readonly></textarea>
-  <button onclick="copyToClipboard()">Copy URL</button>
+<div class="button-wrapper">
+  <div class="button-row">
+    <div class="copy-url-container">
+      <button class="action-btn" onclick="copyToClipboard()">Copy URL</button>
+      <textarea id="generatedURL" class="generated-url-output" rows="3" readonly></textarea>
+    </div>
+
+    <div class="view-results-container">
+      <button class="action-btn" id="viewResultsBtn" onclick="openTableau()">View Results</button>
+      <p class="note">Note: The results will be blank until there has been activity on the campaign - please save the link and check in later</p>
+    </div>
+  </div>
+</div>
+
+
 </body>
 </html>
+    
